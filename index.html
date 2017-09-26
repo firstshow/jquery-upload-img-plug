@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/jquery.uploadImg.css">
+</head>
+<body>
+<button id="uploadImgBtn">上传图片</button>
+
+<ul id="display-box">
+
+</ul>
+
+<!--<div class="x-upload-box">-->
+    <!--<header>-->
+        <!--<h3>上传门店logo</h3>-->
+        <!--<i class="x-close-icon-btn"></i>-->
+    <!--</header>-->
+    <!--<section>-->
+        <!--<button class="x-file-input-box">-->
+            <!--<span>上传新图片</span>-->
+            <!--<input type="file" accept="image/gif,image/jpeg,image/jpg,image/png" name="imageFile">-->
+        <!--</button>-->
+
+        <!--<ul class="x-upload-img-list">-->
+            <!--<li class="-active">-->
+                <!--<img src="./images/demo_image.jpg" width="100%" height="100%" alt="上传图片">-->
+            <!--</li>-->
+        <!--</ul>-->
+    <!--</section>-->
+    <!--<footer>-->
+        <!--<button class="x-confirm-btn">确定</button>-->
+    <!--</footer>-->
+<!--</div>-->
+
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="js/jquery.uploadImg.js"></script>
+<script>
+    $('#uploadImgBtn').click(function () {
+        $(this).jQueryUploadImg({
+            limit:{
+                scale:3
+            },
+            multiSelect:true
+        },function(res){
+            if(res.success){
+                console.log(res);
+            } else {
+                alert(res.message);
+                return;
+            }
+
+            this.saveToLocalStorage(res.base64Url); // 将上传的图片存储在本地，如果需要上传到服务器，则把服务器img链接存在本地；
+
+            this.initImgList(); // 初始化已上传图片列表
+        },function(res){
+            var imgList = [];
+            for (var i = 0; i < res.length; i++) {
+                imgList.push(`<li style="width: 100px;">
+                                    <img src=${res[i]} data-type="js-select-img" width="100%" height="100%" alt="上传图片">
+                                </li>`);
+            }
+            $('#display-box').html(imgList.join(''));
+            this.destroy();
+
+        });
+    });
+</script>
+</body>
+</html>

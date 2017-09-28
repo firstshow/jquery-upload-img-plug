@@ -4,10 +4,7 @@
  */
 
 ;(function ($, window, document, undefined) {
-    var uploadImg = function (el, options, uploadCallback, confirmCallback) {
-        this.$el = el;
-        this.uploadCallback = uploadCallback;
-        this.confirmCallback = confirmCallback;
+    var uploadImg = function (el, options) {
         this.defaults = {
             // 主题设置
             theme: {
@@ -285,17 +282,17 @@
         changeFile: function(callback){
             if(typeof callback === 'function') {
                 this.fileChange = callback;
-                return this;
             }
+            return this;
         },
         /**
          * 点击确认按钮后的回调函数
          * */
         confirmSelect: function(callback){
-            console.log("sdasd");
             if(typeof callback === 'function') {
                 this.confirm = callback;
             }
+            return this;
         },
         /**
          * 从localStorage中取出之前存储的图片

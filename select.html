@@ -36,16 +36,15 @@
 <!--</div>-->
 
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="js/jquery.uploadImg.js?v=12"></script>
+<script src="js/jquery.select.js"></script>
 <script>
     $('#uploadImgBtn').click(function () {
         $(this).jQueryUploadImg({
             limit:{
-                scale:.1,
+                scale:3
             },
-            multiSelect:false
-        }).changeFile(function(res){
-            console.log(res);
+            multiSelect:true
+        },function(res){
             if(res.success){
                 console.log(res);
             } else {
@@ -53,11 +52,10 @@
                 return;
             }
 
-            this.saveToLocalStorage(res.base64Url); // 将上传的图片存储在本地，如果需要上传到服务器，则把服务器img链接存在本地； 当图片太大，存储的是base64字符串，则localStorage很容易爆满
+            this.saveToLocalStorage(res.base64Url); // 将上传的图片存储在本地，如果需要上传到服务器，则把服务器img链接存在本地；
 
             this.initImgList(); // 初始化已上传图片列表
-        }).confirmSelect(function(res){
-            console.log(res);
+        },function(res){
             var imgList = [];
             for (var i = 0; i < res.length; i++) {
                 imgList.push(`<li style="width: 100px;">
@@ -66,6 +64,7 @@
             }
             $('#display-box').html(imgList.join(''));
             this.destroy();
+
         });
     });
 </script>

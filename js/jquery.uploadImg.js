@@ -185,7 +185,7 @@
                         that.selectImg(event.target);
                         break;
                     case 'js-confirm-select-btn':
-                        that.confirm(event);
+                        that.confirm(that.selectImgList);
                         break;
                     default:
                         break;
@@ -282,8 +282,20 @@
         /**
          * 当文件选择后，执行回调函数，把上传的内容传出去
          * */
-        fileChange: function (data) {
-            this.uploadCallback && this.uploadCallback(data);
+        changeFile: function(callback){
+            if(typeof callback === 'function') {
+                this.fileChange = callback;
+                return this;
+            }
+        },
+        /**
+         * 点击确认按钮后的回调函数
+         * */
+        confirmSelect: function(callback){
+            console.log("sdasd");
+            if(typeof callback === 'function') {
+                this.confirm = callback;
+            }
         },
         /**
          * 从localStorage中取出之前存储的图片
@@ -306,16 +318,10 @@
             // 首先先将保存的图片进行数组去重,去重后再存储到local中
             window.localStorage.setItem('imgList', JSON.stringify(this.removeArryRepeat(imgList)));
         },
-        /**
-         * 点击确认按钮后的回调函数
-         * */
-        confirm: function () {
-            this.confirmCallback && this.confirmCallback(this.selectImgList);
-        },
     }
 
-    $.fn.jQueryUploadImg = function (options, uploadCallback, confirmCallback) {
-        var myPlugin = new uploadImg(this, options, uploadCallback, confirmCallback);
+    $.fn.jQueryUploadImg = function (options) {
+        var myPlugin = new uploadImg(this, options);
         myPlugin.init();
         myPlugin.bindEvent();
         return myPlugin;

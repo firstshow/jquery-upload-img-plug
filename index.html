@@ -41,9 +41,9 @@
     $('#uploadImgBtn').click(function () {
         $(this).jQueryUploadImg({
             limit:{
-                scale:.1,
+                scale:.1
             },
-            multiSelect:false
+            multiSelect:true
         }).changeFile(function(res){
             console.log(res);
             if(res.success){

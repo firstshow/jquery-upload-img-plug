@@ -151,6 +151,16 @@
     border: 1px solid #e6e6e6;
 }
 
+.x-upload-img-list::-webkit-scrollbar{
+    width: 10px;
+    height: 16px;
+    background-color: #f7f7f7;
+}
+.x-upload-img-list::-webkit-scrollbar-thumb{
+    border-radius: 10px;
+    background-color: rgba(0,0,0,.2);
+}
+
 .x-upload-img-list li{
     position: relative;
     float: left;

@@ -7,41 +7,40 @@
     var uploadImg = function (el, options) {
         this.defaults = {
             // 主题设置
-            theme: {
-                title: '上传门店图片', // 标题
-                uploadBtnText: '上传图片', // 上传按钮文字
-                okBtnText: '确定' // 确认按钮文字
-            },
+            title: '上传门店图片', // 标题
+            uploadBtnText: '上传图片', // 上传按钮文字
+            okBtnText: '确定', // 确认按钮文字
+            
             type: 'png', // 希望返回什么图片类型，默认为png
             multiSelect: false, // 是否支持多选
+
             // 图片限制条件
-            limit: {
-                width: 0, // 限制宽度必须是该宽度，0为不限制
-                height: 0, // 限制高度必须是该高度，0为不限制
-                isSquare: false, // 是否限制为正方形就可以
-                size: 0, // 限制上传图片大小，0为不限制
-                minSize:500, // 限制最小的压缩大小，如果小于该大小，图片则不压缩
-                quality: 1, // 图片压缩的质量 0.1~1 1为不压缩 当type为jpg或者jpeg时候才生效
-                scale: 1  // 图片缩放比例
-            }
+            width: 0, // 限制宽度必须是该宽度，0为不限制
+            height: 0, // 限制高度必须是该高度，0为不限制
+            isSquare: false, // 是否限制为正方形就可以
+            size: 0, // 限制上传图片大小，0为不限制
+            minSize:200, // 限制最小的压缩大小，如果小于200kb，图片则不压缩
+            quality: 1, // 图片压缩的质量 0.1~1 1为不压缩 当type为jpg或者jpeg时候才生效
+            scale: 1  // 图片缩放比例
         };
         this.options = $.extend({}, this.defaults, options);
+        console.log(this.options);
         this.selectImgList = [];
         this.html = `<div class="x-upload-box">
                         <header>
-                            <h3>${this.options.theme.title}</h3>
+                            <h3>${this.options.title}</h3>
                             <i class="x-close-icon-btn" data-type="js-close-icon-btn"></i>
                         </header>
                         <section>
                             <button class="x-file-input-box" data-type="js-upload-file-input">
-                                ${this.options.theme.uploadBtnText}
+                                ${this.options.uploadBtnText}
                                 <input id="upload-file-input" type="file" accept="image/jpeg,image/jpg,image/png" name="imageFile">
                             </button>
                     
                             <ul class="x-upload-img-list"></ul>
                         </section>
                         <footer>
-                            <button class="x-confirm-btn" data-type="js-confirm-select-btn">${this.options.theme.okBtnText}</button>
+                            <button class="x-confirm-btn" data-type="js-confirm-select-btn">${this.options.okBtnText}</button>
                         </footer>
                     </div>`;
     }
@@ -88,6 +87,8 @@
         initImgList: function () {
             var imgList = this.getLocalStorage(),
                 listDom = [];
+
+            console.log();
 
             for (var i = 0; i < imgList.length; i++) {
                 listDom.push(`<li class=${i === 0 ? '-active' : ''}>
@@ -219,38 +220,43 @@
                     imgHeight = image.height,
                     fileSize = file.size / 1024;
 
-                if (that.options.limit.isSquare && (imgWidth !== imgHeight)) { // 检测是否是正方形
+                if (that.options.isSquare && (imgWidth !== imgHeight)) { // 检测是否是正方形
                     that.fileChange({
                         success: false,
                         state: 3,
                         message: '请上传正方形图片',
                     });
                     return;
-                } else if (that.options.limit.width && (that.options.limit.width !== imgWidth)) { // 检测是否与指定宽度一致
+                } else if (that.options.width && (that.options.width !== imgWidth)) { // 检测是否与指定宽度一致
                     that.fileChange({
                         success: false,
                         state: 1,
                         message: '请上传指定宽度的图片',
                     });
                     return;
-                } else if (that.options.limit.height && (that.options.limit.height !== imgHeight)) { // 检测是否与指定高度一致
+                } else if (that.options.height && (that.options.height !== imgHeight)) { // 检测是否与指定高度一致
                     that.fileChange({
                         success: false,
                         state: 2,
                         message: '请上传指定高度的图片',
                     });
+                    debugger;
                     return;
-                } else if (that.options.limit.size && (fileSize > that.options.limit.size)) { // 检测上传图片比限制的图片小
+                } else if (that.options.size && (fileSize > that.options.size)) { // 检测上传图片比限制的图片小
                     that.fileChange({
                         success: false,
                         state: 2,
-                        message: '请上传小于' + that.options.limit.size + '的图片',
+                        message: '请上传小于' + that.options.size + '的图片',
                     });
                     return;
-                } else if(that.options.limit.minSize > fileSize) {
+                } else if(that.options.minSize > fileSize) {
+                    console.log("不压缩");
                     that.transformationBase64(this, imgWidth, imgHeight,fileSize);
+                    return;
                 } else {
+                    console.log(fileSize+"压缩"+that.options.minSize);
                     that.compressAndTransformationBase64(this, imgWidth, imgHeight,fileSize);
+                    return;
                 }
             };
         },
@@ -268,13 +274,12 @@
             canvas.height = height;
             canvas.style.width = width;
             canvas.style.height = height;
-            ctx.drawImage(img, 0, 0, width, height, 0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
             if (this.options.type === 'png') { // 当png时候，对图片进行压缩
                 base64Url = canvas.toDataURL('image/png');
             } else { // 当jpg时候，对图片进行压缩
                 base64Url = canvas.toDataURL('image/jpeg', 1);
             }
-
             this.fileChange({
                 success: true,
                 state: 200,
@@ -297,15 +302,16 @@
             var canvas = document.createElement('canvas'),
                 ctx = canvas.getContext('2d'),
                 base64Url = '';
-            canvas.width = this.options.limit.scale * width;
-            canvas.height = this.options.limit.scale * height;
-            canvas.style.width = this.options.limit.scale * width;
-            canvas.style.height = this.options.limit.scale * height;
-            ctx.drawImage(img, 0, 0, width, height, 0, 0, this.options.limit.scale * width, this.options.limit.scale * height);
+            console.log(this.options.scale);
+            canvas.width = this.options.scale * width;
+            canvas.height = this.options.scale * height;
+            canvas.style.width = this.options.scale * width;
+            canvas.style.height = this.options.scale * height;
+            ctx.drawImage(img, 0, 0, width, height, 0, 0, this.options.scale * width, this.options.scale * height);
             if (this.options.type === 'png') { // 当png时候，对图片进行压缩
                 base64Url = canvas.toDataURL('image/png');
             } else { // 当jpg时候，对图片进行压缩
-                base64Url = canvas.toDataURL('image/jpeg', this.options.limit.quality);
+                base64Url = canvas.toDataURL('image/jpeg', this.options.quality);
             }
 
             this.fileChange({

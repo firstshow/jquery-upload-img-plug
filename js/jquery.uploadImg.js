@@ -20,6 +20,7 @@
                 height: 0, // 限制高度必须是该高度，0为不限制
                 isSquare: false, // 是否限制为正方形就可以
                 size: 0, // 限制上传图片大小，0为不限制
+                minSize:500, // 限制最小的压缩大小，如果小于该大小，图片则不压缩
                 quality: 1, // 图片压缩的质量 0.1~1 1为不压缩 当type为jpg或者jpeg时候才生效
                 scale: 1  // 图片缩放比例
             }
@@ -246,15 +247,53 @@
                         message: '请上传小于' + that.options.limit.size + '的图片',
                     });
                     return;
+                } else if(that.options.limit.minSize > fileSize) {
+                    that.transformationBase64(this, imgWidth, imgHeight,fileSize);
                 } else {
-                    that.transformationBase64(this, imgWidth, imgHeight);
+                    that.compressAndTransformationBase64(this, imgWidth, imgHeight,fileSize);
                 }
             };
         },
         /**
-         * 将file文件转换为base64
+         * 当压缩图片尺寸比较小的时候，则不进行压缩，不然就是真了；最后通过canvas转换为base64
+         * @param img 图片对象
+         * @param width 图片的宽度
+         * @param height 图片的高度
          * */
-        transformationBase64: function (img, width, height) {
+        transformationBase64: function (img, width, height,fileSize) {
+            var canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d'),
+                base64Url = '';
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.width = width;
+            canvas.style.height = height;
+            ctx.drawImage(img, 0, 0, width, height, 0, 0, width, height);
+            if (this.options.type === 'png') { // 当png时候，对图片进行压缩
+                base64Url = canvas.toDataURL('image/png');
+            } else { // 当jpg时候，对图片进行压缩
+                base64Url = canvas.toDataURL('image/jpeg', 1);
+            }
+
+            this.fileChange({
+                success: true,
+                state: 200,
+                message: '上传转换成功',
+                imgInfo:{
+                    width,
+                    height,
+                    fileSize
+                },
+                base64Url: base64Url
+            });
+        },
+        /**
+         * 将图片进行压缩，并且通过canvas转换为base64
+         * @param img 图片对象
+         * @param width 图片的宽度
+         * @param height 图片的高度
+         * */
+        compressAndTransformationBase64: function (img, width, height, fileSize) {
             var canvas = document.createElement('canvas'),
                 ctx = canvas.getContext('2d'),
                 base64Url = '';
@@ -273,6 +312,11 @@
                 success: true,
                 state: 200,
                 message: '上传转换成功',
+                imgInfo:{
+                    width,
+                    height,
+                    fileSize
+                },
                 base64Url: base64Url
             });
         },

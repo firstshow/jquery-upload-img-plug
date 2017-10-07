@@ -72,11 +72,13 @@
          * 先将元素插入，再添加出现动画
          * */
         init: function () {
-            this.showMask();
+            var that = this;
+            that.showMask();
             $('body').append(this.html);
-            this.initImgList();
+            that.initImgList();
             setTimeout(function () {
                 $('.x-upload-box').addClass('-show');
+                that.bindEvent();
             }, 10);
         },
         /**
@@ -166,9 +168,7 @@
             var that = this;
             that.$element = $('.x-upload-box');
 
-            that.$element.on('change', '#upload-file-input', function (event) {
-                that.readFiles(event);
-            });
+            that.$element.on('change', '#upload-file-input', this.readFiles.bind(this));
             // 根据data-type 绑定对应的事件
             that.$element.on('click', function (event) {
                 switch (event.target.getAttribute("data-type")) {
@@ -320,7 +320,6 @@
     $.fn.jQueryUploadImg = function (options) {
         var myPlugin = new uploadImg(this, options);
         myPlugin.init();
-        myPlugin.bindEvent();
         return myPlugin;
     }
 

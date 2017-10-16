@@ -114,12 +114,8 @@
          * 初始化选择列表
          * */
         init: function(){
-            if($('.x-down-select-box').length === 0){
-                $('body').append(this.html);
-                this.bindEvent();
-            } else {
-                $('.x-down-select-box').show()
-            }
+            $('body').append(this.html);
+            this.bindEvent();
             this.updateData();
             setTimeout(function(){
                 $('.x-down-select-box').addClass('-show');
@@ -145,7 +141,7 @@
             for(var i = 0;i < list.length;i++){
                 var firstHtml = '';
                 if(list[i].childs.length > 0){
-                    this.initSecondSelectList(i);
+                    this.initSecondSelectList(0);
                     firstHtml = `<li data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
                 } else {
                     firstHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
@@ -166,7 +162,11 @@
             for(var j = 0;j < list[i].childs.length;j++){
                 var secondHtml = '';
                 if(list[i].childs[j].childs.length > 0){
-                    this.initThirdSelectList(i,j);
+                    if(i === 0){ // 初始化刚打开时候
+                        this.initThirdSelectList(0,0);
+                    } else {
+                        this.initThirdSelectList(i,j);
+                    }
                     secondHtml = `<li data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
                 } else {
                     secondHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
@@ -194,9 +194,10 @@
          * 隐藏下拉列表
          * */
         destroy: function(){
+            this.unbindEvent();
             $('.x-down-select-box').removeClass('-show');
             setTimeout(function(){
-                $('.x-down-select-box').hide();
+                $('body').find(".x-down-select-box").remove();
             },100)
         },
         /**
@@ -204,6 +205,14 @@
          * */
         bindEvent: function () {
             var that = this;
+            //
+            setTimeout(function(){
+                $(document).on('click',function(){
+                    that.destroy();
+                });
+            },10);
+
+
             // 根据data-type 绑定对应的事件
             $('.x-down-select-box').on({
                 'mouseover': function (event) {
@@ -229,7 +238,6 @@
                         j= event.target.getAttribute("data-j"), // 当前选择的是属于第二分类中的第几个
                         k= event.target.getAttribute("data-k"); // 当前选择的是属于第三分类中的第几个
 
-                    console.log();
                     switch (event.target.getAttribute("data-type")) {
                         case 'mouse-over-li':
                             if(event.target.className.indexOf('-no-child') > -1 ){
@@ -264,9 +272,26 @@
                             break;
                         default:
                             break;
-                    }
+                    };
+
+                    // 点击其它地方时候隐藏下拉框
+                    this.stopPropagation(event);
                 },
             });
+        },
+        /**
+         * 阻止冒泡事件
+         * */
+        stopPropagation(event) {
+            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
+        },
+        /**
+         * 从dom中移除元素前，解除之前的绑定时间
+         * 删除的只是DOM结构，内存中依旧保存着数据。所以要手动将DOM占用的内存清空。
+         * */
+        unbindEvent: function () {
+            $('.x-down-select-box').unbind('click mouseover mouseout');
+            $(document).unbind('click');
         },
         /**
          * 鼠标移上去的选择时间

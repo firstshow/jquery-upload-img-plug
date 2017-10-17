@@ -12,8 +12,13 @@
     <span>请选择</span>
 </div>
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="js/jquery.multiSelect.js?v=29"></script>
+<script src="js/jquery.multiSelect.js?v=36"></script>
 <script>
+    var area = [];
+    $.getJSON("js/area.json?v=111", function (data){
+        area = data;
+    });
+
     $('#multiselect').click(function (event) {
         event.stopPropagation(); // 阻止冒泡事件
         var that = this,
@@ -32,97 +37,7 @@
             firstIndex,
             secondIndex,
             thirdIndex,
-            list: [
-                {
-                    id:1,
-                    name:'美食122222',
-                    childs:[
-                        {
-                            id:11,
-                            name:'美食11',
-                            childs:[
-                                {
-                                    id:111,
-                                    name:'美食111',
-                                },
-                                {
-                                    id:112,
-                                    name:'美食112',
-                                },
-                                {
-                                    id:113,
-                                    name:'美食113',
-                                },
-                                {
-                                    id:114,
-                                    name:'美食114',
-                                },
-                                {
-                                    id:115,
-                                    name:'美食115',
-                                },
-                                {
-                                    id:116,
-                                    name:'美食116',
-                                },
-                                {
-                                    id:117,
-                                    name:'美食117',
-                                },
-                                {
-                                    id:118,
-                                    name:'美食118',
-                                },
-                                {
-                                    id:119,
-                                    name:'美食119',
-                                },
-                            ]
-                        },
-                        {
-                            id:12,
-                            name:'美食12',
-                            childs:[
-                                {
-                                    id:121,
-                                    name:'美食121',
-                                },
-                                {
-                                    id:122,
-                                    name:'美食122',
-                                },
-                            ]
-                        },
-                    ]
-                },
-                {
-                    id:2,
-                    name:'美食2',
-                    childs:[
-                        {
-                            id:22,
-                            name:'美食22',
-                            childs:[
-                                {
-                                    id:222,
-                                    name:'美食222',
-                                },
-                            ]
-                        },
-                    ]
-                },
-                {
-                    id:3,
-                    name:'美食3',
-                    childs:[
-                        {
-                            id:33,
-                            name:'美食33',
-                            childs:[]
-                        },
-                    ]
-                },
-            ]
+            list: area
         }).confirmSelect(function(res){
             console.log(res);
             var firstCategory = res.firstList.name;

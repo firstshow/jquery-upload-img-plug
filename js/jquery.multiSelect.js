@@ -99,6 +99,11 @@
                         },
                     ]
                 },
+                {
+                    id:4,
+                    name:'美食4',
+                    childs:[]
+                },
             ],
             firstIndex:0, // 初始化第一列选中的index
             secondIndex:0, // 初始化第二列选中的index
@@ -145,7 +150,7 @@
                 firstListHtmlArry = [];
             for(var i = 0;i < list.length;i++){
                 var firstHtml = '';
-                if(list[i].childs.length > 0){
+                if(list[i].childs && list[i].childs.length > 0){
                     if(i === this.options.firstIndex){
                         firstHtml = `<li class="-active" data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
                     } else {
@@ -158,7 +163,11 @@
                 }
                 firstListHtmlArry.push(firstHtml);
             }
-            $('#first-select-list').html(firstListHtmlArry.join(''));
+
+            // 设置scrollTop，让选中值在第一个；32是一个li的高度
+            $('#first-select-list').html(firstListHtmlArry.join('')).scrollTop(32 * this.options.firstIndex);
+
+            console.log(firstHtml.offsetHeight);
             this.initSecondSelectList(this.options.firstIndex);
         },
         /**
@@ -171,7 +180,7 @@
 
             for(var j = 0;j < list[i].childs.length;j++){
                 var secondHtml = '';
-                if(list[i].childs[j].childs.length > 0){
+                if(list[i].childs[j].childs && list[i].childs[j].childs.length > 0){
                     if(j === this.options.secondIndex){
                         secondHtml = `<li class="-active" data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
                     } else {
@@ -190,8 +199,8 @@
             } else {
                 this.initThirdSelectList(i,0);
             }
-
-            $('#second-select-list').html(secondListHtmlArry.join(''));
+            // 设置scrollTop，让选中值在第一个；32是一个li的高度
+            $('#second-select-list').html(secondListHtmlArry.join('')).scrollTop(32 * this.options.secondIndex);
         },
         /**
          * 初始化第三个列表
@@ -202,16 +211,21 @@
             var list = this.options.list,
                 thirdListHtmlArry = [],
                 thirdHtml = '';
-
-            for(var k = 0;k < list[i].childs[j].childs.length;k++){
-                if(k === this.options.thirdIndex){
-                    thirdHtml = `<li class="-no-child -active" data-type="mouse-over-li" data-id=${list[i].childs[j].childs[k].id} data-column="3" data-i=${i} data-j=${j} data-k=${k}>${list[i].childs[j].childs[k].name}</li>`;
-                } else {
-                    thirdHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].childs[j].childs[k].id} data-column="3" data-i=${i} data-j=${j} data-k=${k}>${list[i].childs[j].childs[k].name}</li>`;
+            try{
+                for(var k = 0;k < list[i].childs[j].childs.length;k++){
+                    if(k === this.options.thirdIndex){
+                        thirdHtml = `<li class="-no-child -active" data-type="mouse-over-li" data-id=${list[i].childs[j].childs[k].id} data-column="3" data-i=${i} data-j=${j} data-k=${k}>${list[i].childs[j].childs[k].name}</li>`;
+                    } else {
+                        thirdHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].childs[j].childs[k].id} data-column="3" data-i=${i} data-j=${j} data-k=${k}>${list[i].childs[j].childs[k].name}</li>`;
+                    }
+                    thirdListHtmlArry.push(thirdHtml);
                 }
-                thirdListHtmlArry.push(thirdHtml);
+            } catch (err){
+                thirdHtml = '';
             }
-            $('#third-select-list').html(thirdListHtmlArry.join(''));
+
+            // 设置scrollTop，让选中值在第一个；32是一个li的高度
+            $('#third-select-list').html(thirdListHtmlArry.join('')).scrollTop(32 * this.options.thirdIndex);
         },
         /**
          * 隐藏下拉列表
@@ -266,27 +280,18 @@
                                 var data = {};
 
                                 try{
-                                    data.firstList = {
-                                        index:i,
-                                        id: that.options.list[i].id,
-                                        name: that.options.list[i].name
-                                    }
+                                    data.firstList = that.options.list[i];
+                                    data.firstList.index = i;
                                 } catch (err){}
 
                                 try{
-                                    data.secondList = {
-                                        index:j,
-                                        id: that.options.list[i].childs[j].id,
-                                        name: that.options.list[i].childs[j].name,
-                                    }
+                                    data.secondList = that.options.list[i].childs[j];
+                                    data.secondList.index = j;
                                 } catch (err){}
 
                                 try{
-                                    data.thirdList = {
-                                        index:k || '',
-                                        id: that.options.list[i].childs[j].childs[k].id || '',
-                                        name: that.options.list[i].childs[j].childs[k].name || '',
-                                    }
+                                    data.thirdList = that.options.list[i].childs[j].childs[k];
+                                    data.thirdList.index = k;
                                 } catch (err){}
                                 that.destroy();
                                 that.confirm(data);

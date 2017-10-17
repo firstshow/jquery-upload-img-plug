@@ -151,14 +151,18 @@
             for(var i = 0;i < list.length;i++){
                 var firstHtml = '';
                 if(list[i].childs && list[i].childs.length > 0){
-                    if(i === this.options.firstIndex){
+                    if(i === this.options.firstIndex){ console.log(i+'第一个：'+ this.options.firstIndex);
                         firstHtml = `<li class="-active" data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
                     } else {
                         firstHtml = `<li data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
                     }
 
                 } else {
-                    firstHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
+                    if(i === this.options.firstIndex){ console.log(i+'第一个：'+ this.options.firstIndex);
+                        firstHtml = `<li class="-no-child -active" data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
+                    } else {
+                        firstHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].id} data-column="1" data-i=${i}>${list[i].name}</li>`;
+                    }
                     $('#second-select-list').html('');
                 }
                 firstListHtmlArry.push(firstHtml);
@@ -167,7 +171,6 @@
             // 设置scrollTop，让选中值在第一个；32是一个li的高度
             $('#first-select-list').html(firstListHtmlArry.join('')).scrollTop(32 * this.options.firstIndex);
 
-            console.log(firstHtml.offsetHeight);
             this.initSecondSelectList(this.options.firstIndex);
         },
         /**
@@ -187,7 +190,12 @@
                         secondHtml = `<li data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
                     }
                 } else {
-                    secondHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
+                    if(j === this.options.secondIndex){
+                        secondHtml = `<li class="-no-child -active" data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
+                    } else {
+                        secondHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].childs[j].id} data-column="2" data-i=${i} data-j=${j}>${list[i].childs[j].name}</li>`;
+                    }
+
                     $('#third-select-list').html('');
                 }
                 secondListHtmlArry.push(secondHtml);
@@ -213,7 +221,7 @@
                 thirdHtml = '';
             try{
                 for(var k = 0;k < list[i].childs[j].childs.length;k++){
-                    if(k === this.options.thirdIndex){
+                    if(k === this.options.thirdIndex){ console.log(k+'第三个：'+ this.options.thirdIndex);
                         thirdHtml = `<li class="-no-child -active" data-type="mouse-over-li" data-id=${list[i].childs[j].childs[k].id} data-column="3" data-i=${i} data-j=${j} data-k=${k}>${list[i].childs[j].childs[k].name}</li>`;
                     } else {
                         thirdHtml = `<li class="-no-child" data-type="mouse-over-li" data-id=${list[i].childs[j].childs[k].id} data-column="3" data-i=${i} data-j=${j} data-k=${k}>${list[i].childs[j].childs[k].name}</li>`;

@@ -41,30 +41,32 @@
     $('#uploadImgBtn').click(function () {
         $(this).jQueryUploadImg({
             multiSelect:true,
-            scale: .5  // 图片缩放比例
-        }).changeFile(function(res){
-            console.log(res);
-            if(res.success){
+            scale: .5,  // 图片缩放比例
+            changeFile: function(res){
+                console.log(res);
+                if(res.success){
 
-            } else {
-                alert(res.message);
-                return;
-            }
+                } else {
+                    alert(res.message);
+                    return;
+                }
 
-            this.saveToLocalStorage(res.base64Url); // 将上传的图片存储在本地，如果需要上传到服务器，则把服务器img链接存在本地； 当图片太大，存储的是base64字符串，则localStorage很容易爆满
+                this.saveToLocalStorage(res.base64Url); // 将上传的图片存储在本地，如果需要上传到服务器，则把服务器img链接存在本地； 当图片太大，存储的是base64字符串，则localStorage很容易爆满
 
-            this.initImgList(); // 初始化已上传图片列表
-        }).confirmSelect(function(res){
-            console.log(res);
-            var imgList = [];
-            for (var i = 0; i < res.length; i++) {
-                imgList.push(`<li>
+                this.initImgList(); // 初始化已上传图片列表
+            },
+            confirmSelect: function(res){
+                console.log(res);
+                var imgList = [];
+                for (var i = 0; i < res.length; i++) {
+                    imgList.push(`<li>
                                     <img src=${res[i]} data-type="js-select-img" alt="上传图片">
                                 </li>`);
+                }
+                $('#display-box').html(imgList.join(''));
+                this.destroy();
             }
-            $('#display-box').html(imgList.join(''));
-            this.destroy();
-        });
+        })
     });
 </script>
 </body>

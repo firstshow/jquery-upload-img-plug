@@ -21,7 +21,9 @@
             size: 0, // 限制上传图片大小，0为不限制
             minSize:200, // 限制最小的压缩大小，如果小于200kb，图片则不压缩
             quality: 1, // 图片压缩的质量 0.1~1 1为不压缩 当type为jpg或者jpeg时候才生效
-            scale: 1  // 图片缩放比例
+            scale: 1,  // 图片缩放比例
+            changeFile:function(){},
+            confirmSelect:function(){}
         };
         this.options = $.extend({}, this.defaults, options);
         console.log(this.options);
@@ -184,7 +186,7 @@
                         that.selectImg(event.target);
                         break;
                     case 'js-confirm-select-btn':
-                        that.confirm(that.selectImgList);
+                        that.options.confirmSelect.call(that,that.selectImgList);
                         break;
                     default:
                         break;
@@ -221,21 +223,21 @@
                     fileSize = file.size / 1024;
 
                 if (that.options.isSquare && (imgWidth !== imgHeight)) { // 检测是否是正方形
-                    that.fileChange({
+                    that.options.changeFile.call(that,{
                         success: false,
                         state: 3,
                         message: '请上传正方形图片',
                     });
                     return;
                 } else if (that.options.width && (that.options.width !== imgWidth)) { // 检测是否与指定宽度一致
-                    that.fileChange({
+                    that.options.changeFile.call(that,{
                         success: false,
                         state: 1,
                         message: '请上传指定宽度的图片',
                     });
                     return;
                 } else if (that.options.height && (that.options.height !== imgHeight)) { // 检测是否与指定高度一致
-                    that.fileChange({
+                    that.options.changeFile.call(that,{
                         success: false,
                         state: 2,
                         message: '请上传指定高度的图片',
@@ -243,7 +245,7 @@
                     debugger;
                     return;
                 } else if (that.options.size && (fileSize > that.options.size)) { // 检测上传图片比限制的图片小
-                    that.fileChange({
+                    that.options.changeFile.call(that,{
                         success: false,
                         state: 2,
                         message: '请上传小于' + that.options.size + '的图片',
@@ -280,7 +282,7 @@
             } else { // 当jpg时候，对图片进行压缩
                 base64Url = canvas.toDataURL('image/jpeg', 1);
             }
-            this.fileChange({
+            this.options.changeFile.call(this,{
                 success: true,
                 state: 200,
                 message: '上传转换成功',
@@ -314,7 +316,7 @@
                 base64Url = canvas.toDataURL('image/jpeg', this.options.quality);
             }
 
-            this.fileChange({
+            this.options.changeFile.call(this,{
                 success: true,
                 state: 200,
                 message: '上传转换成功',
@@ -326,24 +328,24 @@
                 base64Url: base64Url
             });
         },
-        /**
-         * 当文件选择后，执行回调函数，把上传的内容传出去
-         * */
-        changeFile: function(callback){
-            if(typeof callback === 'function') {
-                this.fileChange = callback;
-            }
-            return this;
-        },
-        /**
-         * 点击确认按钮后的回调函数
-         * */
-        confirmSelect: function(callback){
-            if(typeof callback === 'function') {
-                this.confirm = callback;
-            }
-            return this;
-        },
+        // /**
+        //  * 当文件选择后，执行回调函数，把上传的内容传出去
+        //  * */
+        // changeFile: function(callback){
+        //     if(typeof callback === 'function') {
+        //         this.fileChange = callback;
+        //     }
+        //     return this;
+        // },
+        // /**
+        //  * 点击确认按钮后的回调函数
+        //  * */
+        // confirmSelect: function(callback){
+        //     if(typeof callback === 'function') {
+        //         this.confirm = callback;
+        //     }
+        //     return this;
+        // },
         /**
          * 从localStorage中取出之前存储的图片
          * @param url 图片链接

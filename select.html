@@ -38,19 +38,20 @@
             firstIndex,
             secondIndex,
             thirdIndex,
-            list: area
-        }).confirmSelect(function(res){
-            console.log(res);
-            var firstCategory = res.firstList.name;
-            var secondCategory = res.secondList && '/'+res.secondList.name || '';
-            var thirdCategory = res.thirdList && '/'+res.thirdList.name || '';
+            list: area,
+            confirmSelect: function(res){
+                console.log(res);
+                var firstCategory = res.firstList.name;
+                var secondCategory = res.secondList && '/'+res.secondList.name || '';
+                var thirdCategory = res.thirdList && '/'+res.thirdList.name || '';
 
-            // 存储当前选择的index 值
-            res.firstList && $(that).data('first-index',res.firstList.index);
-            res.secondList && $(that).data('second-index',res.secondList.index);
-            res.thirdList && $(that).data('third-index',res.thirdList.index);
+                // 存储当前选择的index 值
+                res.firstList && $(that).data('first-index',res.firstList.index);
+                res.secondList && $(that).data('second-index',res.secondList.index);
+                res.thirdList && $(that).data('third-index',res.thirdList.index);
 
-            $('#multiselect').find('span').text(firstCategory + ''+secondCategory + '' +thirdCategory );
+                $('#multiselect').find('span').text(firstCategory + ''+secondCategory + '' +thirdCategory );
+            }
         });
     });
 </script>

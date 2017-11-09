@@ -107,7 +107,8 @@
             ],
             firstIndex:0, // 初始化第一列选中的index
             secondIndex:0, // 初始化第二列选中的index
-            thirdIndex:0 // 初始化第三列选中的index
+            thirdIndex:0, // 初始化第三列选中的index
+            confirmSelect:function(){}
         };
         this.options = $.extend({},defaults,options);
         this.html = '<div class="x-down-select-box">'+
@@ -302,7 +303,7 @@
                                     data.thirdList.index = k;
                                 } catch (err){}
                                 that.destroy();
-                                that.confirm(data);
+                                that.options.confirmSelect.call(that,data);
                             }
                             break;
                         default:
